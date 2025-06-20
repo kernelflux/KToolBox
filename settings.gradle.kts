@@ -23,4 +23,15 @@ dependencyResolutionManagement {
 
 rootProject.name = "KToolbox"
 include(":app")
-include(":ktoolbox")
+include(":ktoolbox-bundle")
+
+include(":ktoolbox-core")
+include(":ktoolbox-device")
+include(":ktoolbox-media")
+include(":ktoolbox-network")
+include(":ktoolbox-parser")
+include(":ktoolbox-storage")
+include(":ktoolbox-string")
+include(":ktoolbox-system")
+include(":ktoolbox-thread")
+
