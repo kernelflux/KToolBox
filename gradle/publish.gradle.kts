@@ -39,7 +39,7 @@ afterEvaluate {
             //println("gprUser:$gprUser,\ngprPass:$gprPass")
             maven {
                 name = "GitHubPackages"
-                url = uri("https://maven.pkg.github.com/kernelflux/UixKit")
+                url = uri("https://maven.pkg.github.com/kernelflux/KToolBox")
                 credentials {
                     username = gprUser
                     password = gprPass
