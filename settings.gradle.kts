@@ -27,6 +27,7 @@ include(":app")
 include(":ktoolbox-bundle")
 
 include(":ktoolbox-core")
+include(":ktoolbox-display")
 include(":ktoolbox-device")
 include(":ktoolbox-media")
 include(":ktoolbox-network")

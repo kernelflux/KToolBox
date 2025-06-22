@@ -5,11 +5,9 @@ plugins {
 }
 
 android {
-    namespace = "com.kernelflux.ktoolbox.core"
+    namespace = "com.kernelflux.ktoolbox.display"
 }
 
 dependencies {
 }
 
-
-extra["ktoolbox.version"] = "0.0.4"
