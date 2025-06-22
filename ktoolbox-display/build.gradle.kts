@@ -13,4 +13,4 @@ dependencies {
 
 
 
-extra["ktoolbox.version"] = "0.0.3"
+extra["ktoolbox.version"] = "0.0.4"
