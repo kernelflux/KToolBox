@@ -1,9 +1,9 @@
 package com.kernelflux.ktoolbox.display
 
-import android.content.Context
 import android.util.TypedValue
 import android.view.View
 import androidx.annotation.DimenRes
+import androidx.fragment.app.Fragment
 
 val Float.dp: Int
     get() = toPx(this, isSp = false)
@@ -24,14 +24,14 @@ private fun toPx(value: Float, isSp: Boolean): Int {
     return TypedValue.applyDimension(unit, value, metrics).toInt()
 }
 
-fun Context.dimenPx(@DimenRes resId: Int): Int =
-    resources.getDimensionPixelSize(resId)
+fun dimenPx(@DimenRes resId: Int): Int =
+    ViewContextHolder.get().resources.getDimensionPixelSize(resId)
 
-fun Context.dimenFloat(@DimenRes resId: Int): Float =
-    resources.getDimension(resId)
+fun dimenFloat(@DimenRes resId: Int): Float =
+    ViewContextHolder.get().resources.getDimension(resId)
 
-fun View.dimenPx(@DimenRes resId: Int): Int =
-    context.dimenPx(resId)
+fun View.dimenPx(@DimenRes resId: Int): Int = dimenPx(resId)
+fun Fragment.dimenPx(@DimenRes resId: Int): Int = dimenPx(resId)
 
-fun View.dimenFloat(@DimenRes resId: Int): Float =
-    context.dimenFloat(resId)
+fun View.dimenFloat(@DimenRes resId: Int): Float = dimenFloat(resId)
+fun Fragment.dimenFloat(@DimenRes resId: Int): Float = dimenFloat(resId)
