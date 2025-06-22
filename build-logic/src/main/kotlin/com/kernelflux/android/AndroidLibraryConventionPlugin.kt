@@ -135,6 +135,7 @@ class AndroidModuleConventionPlugin : Plugin<Project> {
             publishing {
                 singleVariant("release") {
                     withSourcesJar()
+                    withJavadocJar()
                 }
             }
         }

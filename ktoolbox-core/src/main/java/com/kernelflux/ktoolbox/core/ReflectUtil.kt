@@ -10,6 +10,7 @@ object ReflectUtil {
     private val TAG: String = ReflectUtil::class.java.simpleName
 
 
+    @JvmStatic
     fun getDeclaredField(cls: Class<*>?, filedName: String, obj: Any?): Any? {
         return try {
             val declaredField: Field? = cls?.getDeclaredField(filedName)
@@ -22,12 +23,14 @@ object ReflectUtil {
     }
 
     @Throws(NoSuchMethodException::class)
+    @JvmStatic
     fun getDeclaredMethod(obj: Any?, methodName: String, clsArr: Array<Class<*>>? = null): Method {
         val method = getDeclaredMethod(obj?.javaClass, methodName, clsArr)
         method.isAccessible = true
         return method
     }
 
+    @JvmStatic
     fun getDeclaredField(cls: Class<*>?, filedName: String): Any? {
         return try {
             val field = cls?.getDeclaredField(filedName)
@@ -39,6 +42,7 @@ object ReflectUtil {
         }
     }
 
+    @JvmStatic
     fun invokeDeclaredMethod(
         cls: Class<*>?,
         methodName: String,
@@ -66,6 +70,7 @@ object ReflectUtil {
 
 
     @Throws(NoSuchMethodException::class)
+    @JvmStatic
     fun getDeclaredMethod(
         cls: Class<*>?,
         methodName: String,
@@ -86,6 +91,7 @@ object ReflectUtil {
         }
     }
 
+    @JvmStatic
     fun setDeclaredField(cls: Class<*>?, fieldName: String, obj: Any?, param: Any?) {
         try {
             val field = cls?.getDeclaredField(fieldName)
@@ -96,6 +102,7 @@ object ReflectUtil {
         }
     }
 
+    @JvmStatic
     fun getDeclaredField(clsName: String, fieldName: String, obj: Any): Any? {
         return try {
             getDeclaredField(Class.forName(clsName), fieldName, obj)
@@ -105,6 +112,7 @@ object ReflectUtil {
         }
     }
 
+    @JvmStatic
     fun setDeclaredField(clsName: String, fieldName: String, obj: Any?, param: Any?) {
         try {
             setDeclaredField(Class.forName(clsName), fieldName, obj, param)
@@ -113,6 +121,7 @@ object ReflectUtil {
         }
     }
 
+    @JvmStatic
     fun invokeDeclaredMethod(
         clsName: String,
         methodName: String,
@@ -129,6 +138,7 @@ object ReflectUtil {
     }
 
 
+    @JvmStatic
     fun getField(cls: Class<*>?, filedName: String, obj: Any?): Any? {
         return try {
             val field: Field? = cls?.getField(filedName)
@@ -141,12 +151,14 @@ object ReflectUtil {
     }
 
     @Throws(NoSuchMethodException::class)
+    @JvmStatic
     fun getMethod(obj: Any?, methodName: String, clsArr: Array<Class<*>>? = null): Method {
         val method = getMethod(obj?.javaClass, methodName, clsArr)
         method.isAccessible = true
         return method
     }
 
+    @JvmStatic
     fun getField(cls: Class<*>?, filedName: String): Any? {
         return try {
             val field = cls?.getField(filedName)
@@ -158,6 +170,7 @@ object ReflectUtil {
         }
     }
 
+    @JvmStatic
     fun invokeMethod(
         cls: Class<*>?,
         methodName: String,
@@ -184,6 +197,7 @@ object ReflectUtil {
     }
 
 
+    @JvmStatic
     fun invokeMethod(
         method: Method?,
         obj: Any?,
@@ -203,6 +217,7 @@ object ReflectUtil {
 
 
     @Throws(NoSuchMethodException::class)
+    @JvmStatic
     fun getMethod(cls: Class<*>?, methodName: String, clsArr: Array<Class<*>>? = null): Method {
         return if (cls != null) {
             try {
@@ -219,6 +234,7 @@ object ReflectUtil {
         }
     }
 
+    @JvmStatic
     fun setField(cls: Class<*>?, fieldName: String, obj: Any?, param: Any?) {
         try {
             val field = cls?.getField(fieldName)
@@ -229,6 +245,7 @@ object ReflectUtil {
         }
     }
 
+    @JvmStatic
     fun getField(clsName: String, fieldName: String, obj: Any): Any? {
         return try {
             getField(Class.forName(clsName), fieldName, obj)
@@ -238,6 +255,7 @@ object ReflectUtil {
         }
     }
 
+    @JvmStatic
     fun setField(clsName: String, fieldName: String, obj: Any?, param: Any?) {
         try {
             setField(Class.forName(clsName), fieldName, obj, param)
@@ -246,6 +264,7 @@ object ReflectUtil {
         }
     }
 
+    @JvmStatic
     fun invokeMethod(
         clsName: String,
         methodName: String,
