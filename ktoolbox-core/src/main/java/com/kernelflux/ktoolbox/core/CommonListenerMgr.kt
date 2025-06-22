@@ -8,7 +8,7 @@ import java.util.concurrent.ConcurrentLinkedQueue
 /**
  * * 通用接口回调管理类
  **/
-internal class CommonListenerMgr<T> {
+class CommonListenerMgr<T> {
     private val mListenerQueue = ConcurrentLinkedQueue<T>()
 
     interface IBoolNotifyCallback<T> {
