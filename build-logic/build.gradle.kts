@@ -13,16 +13,16 @@ repositories {
 }
 
 dependencies {
-    implementation("com.android.tools.build:gradle:8.2.2") // ✅ 支持 com.android.library
-    implementation(kotlin("gradle-plugin")) // ✅ 支持 org.jetbrains.kotlin.android
+    //noinspection UseTomlInstead
+    implementation("com.android.tools.build:gradle:8.11.0")
+    implementation(kotlin("gradle-plugin"))
 }
 
 gradlePlugin {
     plugins {
-        //plugin1
-        val androidConfigPlugin = this.create("androidConfig")
-        androidConfigPlugin.id = "com.kernelflux.android.module" // 插件 ID
+        val androidConfigPlugin = this.create("androidConventionConfig")
+        androidConfigPlugin.id = "com.kernelflux.android.module"
         androidConfigPlugin.implementationClass =
-            "com.kernelflux.android.AndroidModuleConventionPlugin" // 插件的实现类
+            "com.kernelflux.android.AndroidModuleConventionPlugin"
     }
 }
