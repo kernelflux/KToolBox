@@ -22,7 +22,7 @@ dependencyResolutionManagement {
     }
 }
 
-rootProject.name = "KToolbox"
+rootProject.name = "ktoolbox"
 include(":app")
 include(":ktoolbox-bundle")
 
