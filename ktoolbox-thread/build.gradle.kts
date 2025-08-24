@@ -8,4 +8,9 @@ android {
 }
 
 dependencies {
+    //noinspection UseTomlInstead
+    releaseApi("com.kernelflux.ktoolbox:logger:0.0.3")
+    debugApi(project(":ktoolbox-logger"))
 }
+
+extra["ktoolbox.version"] = "0.0.3"

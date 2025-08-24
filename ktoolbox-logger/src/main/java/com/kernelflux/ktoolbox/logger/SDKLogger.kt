@@ -1,149 +1,119 @@
 package com.kernelflux.ktoolbox.logger
 
-import android.content.Context
-
 
 /**
  * SDK日志系统
  */
 object SDKLogger {
 
-    // ==================== 初始化 ====================
-    /**
-     * 初始化日志系统
-     */
+
+    @JvmStatic
     fun initialize(
-        context: Context,
+        context: android.content.Context,
         enableLogcat: Boolean = true,
         enableFileOutput: Boolean = false,
-        logDir: String? = null
+        logDir: String? = null,
+        tagPrefix: String = "KToolBoxSDK",
+        enableStackTrace: Boolean = false
     ) {
+        // 设置ApplicationContext
         ApplicationContextProvider.setContext(context.applicationContext)
-        Logger.initialize(enableLogcat, enableFileOutput, logDir)
-        AndroidLogUtil.i("SDKLogger initialized")
+        // 初始化Logger
+        Logger.initialize(enableLogcat = false, enableFileOutput, logDir)
+        if (enableLogcat) {
+            val smartLogcat = SmartLogcatOutput(
+                enableStackTrace = enableStackTrace,
+                tagPrefix = tagPrefix
+            )
+            Logger.addOutput(smartLogcat)
+        }
+        AndroidLogUtil.i("SDKLogger initialized with tag prefix: $tagPrefix")
     }
 
-    // ==================== 简单日志API ====================
-
-    /**
-     * 注册模块
-     */
+    @JvmStatic
     fun registerModules(vararg moduleNames: String) {
         Logger.registerModules(*moduleNames)
     }
 
-    /**
-     * 启用模块
-     */
+    @JvmStatic
     fun enableModules(vararg moduleNames: String) {
         Logger.enableModules(*moduleNames)
     }
 
-    /**
-     * 禁用模块
-     */
+    @JvmStatic
     fun disableModules(vararg moduleNames: String) {
         Logger.disableModules(*moduleNames)
     }
 
-    /**
-     * 检查模块是否启用
-     */
+    @JvmStatic
     fun isModuleEnabled(moduleName: String): Boolean {
         return Logger.isModuleEnabled(moduleName)
     }
 
-    /**
-     * 输出日志
-     */
+    @JvmStatic
     fun log(moduleName: String, message: String) {
         Logger.log(moduleName, message)
     }
 
-    /**
-     * 格式化输出
-     */
+    @JvmStatic
     fun log(moduleName: String, format: String, vararg args: Any?) {
         Logger.log(moduleName, format, *args)
     }
 
-    /**
-     * 异常输出
-     */
+    @JvmStatic
     fun log(moduleName: String, throwable: Throwable, message: String? = null) {
         Logger.log(moduleName, throwable, message)
     }
 
-    // ==================== 多模块日志API ====================
-
-    /**
-     * 日志模块信息
-     */
     data class LogModule(
-        val name: String,           // 模块名称，如 "UserModule"
-        val packageName: String,    // 包名，如 "com.example.user"
-        val version: String = "1.0.0", // 模块版本
-        val description: String = "" // 模块描述
+        val name: String,
+        val packageName: String,
+        val version: String = "1.0.0",
+        val description: String = ""
     ) {
         val tagPrefix: String get() = "[$name]"
     }
 
-    /**
-     * 注册多模块日志
-     */
+    @JvmStatic
     fun registerLogModule(
         module: LogModule,
         vararg logCategories: String
     ) {
-        MultiModuleLogger.registerLogModule(
-            MultiModuleLogger.LogModule(
-                name = module.name,
-                packageName = module.packageName,
-                version = module.version,
-                description = module.description
-            ),
-            *logCategories
+        val internalModule = MultiModuleLogger.LogModule(
+            name = module.name,
+            packageName = module.packageName,
+            version = module.version,
+            description = module.description
         )
+        MultiModuleLogger.registerLogModule(internalModule, *logCategories)
     }
 
-    /**
-     * 启用模块的所有日志分类
-     */
+    @JvmStatic
     fun enableModuleLogCategories(moduleName: String) {
         MultiModuleLogger.enableModuleLogCategories(moduleName)
     }
 
-    /**
-     * 禁用模块的所有日志分类
-     */
+    @JvmStatic
     fun disableModuleLogCategories(moduleName: String) {
         MultiModuleLogger.disableModuleLogCategories(moduleName)
     }
 
-    /**
-     * 启用所有模块的日志分类
-     */
+    @JvmStatic
     fun enableAllModuleLogCategories() {
         MultiModuleLogger.enableAllModuleLogCategories()
     }
 
-    /**
-     * 输出多模块日志
-     */
+    @JvmStatic
     fun log(moduleName: String, logCategory: String, message: String) {
         MultiModuleLogger.log(moduleName, logCategory, message)
     }
 
-    /**
-     * 格式化输出多模块日志
-     */
+    @JvmStatic
     fun log(moduleName: String, logCategory: String, format: String, vararg args: Any?) {
         MultiModuleLogger.log(moduleName, logCategory, format, *args)
     }
 
-    /**
-     * 异常输出多模块日志
-     */
+    @JvmStatic
     fun log(
         moduleName: String,
         logCategory: String,
@@ -153,40 +123,93 @@ object SDKLogger {
         MultiModuleLogger.log(moduleName, logCategory, throwable, message)
     }
 
-    // ==================== 高级功能 ====================
-
-    /**
-     * 添加自定义输出
-     */
+    @JvmStatic
     fun addOutput(output: LogOutput) {
         Logger.addOutput(output)
     }
 
-    /**
-     * 移除输出
-     */
+    @JvmStatic
     fun removeOutput(output: LogOutput) {
         Logger.removeOutput(output)
     }
 
-    /**
-     * 清除所有输出
-     */
+    @JvmStatic
     fun clearOutputs() {
         Logger.clearOutputs()
     }
 
-    /**
-     * 获取统计信息
-     */
+    @JvmStatic
     fun getStats(): String {
         return Logger.getStats()
     }
 
-    /**
-     * 获取模块统计信息
-     */
+    @JvmStatic
     fun getModuleStats(): String {
         return MultiModuleLogger.getModuleStats()
     }
+
+    // 便捷方法
+    @JvmStatic
+    fun debug(moduleName: String, message: String) {
+        log("${moduleName}_DEBUG", message)
+    }
+
+    @JvmStatic
+    fun info(moduleName: String, message: String) {
+        log("${moduleName}_INFO", message)
+    }
+
+    @JvmStatic
+    fun warn(moduleName: String, message: String) {
+        log("${moduleName}_WARN", message)
+    }
+
+    @JvmStatic
+    fun error(moduleName: String, message: String) {
+        log("${moduleName}_ERROR", message)
+    }
+
+    @JvmStatic
+    fun error(moduleName: String, throwable: Throwable, message: String? = null) {
+        log("${moduleName}_ERROR", throwable, message)
+    }
+
+    // 链式调用支持
+    fun debug(moduleName: String): LoggerChain {
+        return LoggerChain(moduleName, "DEBUG")
+    }
+
+    fun info(moduleName: String): LoggerChain {
+        return LoggerChain(moduleName, "INFO")
+    }
+
+    fun warn(moduleName: String): LoggerChain {
+        return LoggerChain(moduleName, "WARN")
+    }
+
+    fun error(moduleName: String): LoggerChain {
+        return LoggerChain(moduleName, "ERROR")
+    }
+
+
+    /**
+     * 链式调用支持类
+     */
+    class LoggerChain(
+        private val moduleName: String,
+        private val level: String
+    ) {
+        fun msg(message: String) {
+            log("${moduleName}_$level", message)
+        }
+
+        fun msg(format: String, vararg args: Any?) {
+            log("${moduleName}_$level", format, *args)
+        }
+
+        fun exception(throwable: Throwable, message: String? = null) {
+            log("${moduleName}_$level", throwable, message)
+        }
+    }
+
 }

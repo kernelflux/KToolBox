@@ -43,7 +43,7 @@ internal object MultiModuleLogger {
         /**
          * 为日志模块注册日志分类
          */
-        fun registerModuleLogCategories(moduleName: String, vararg logCategories: String) {
+        internal fun registerModuleLogCategories(moduleName: String, vararg logCategories: String) {
             val module = modules[moduleName]
             if (module != null) {
                 val categories = moduleLogCategories[moduleName] ?: mutableSetOf()
@@ -327,7 +327,7 @@ internal object MultiModuleLogger {
     /**
      * 初始化多模块日志系统
      */
-    internal  fun initialize(
+    internal fun initialize(
         enableLogcat: Boolean = true,
         enableFileOutput: Boolean = false,
         logDir: String? = null
@@ -357,19 +357,17 @@ internal object MultiModuleLogger {
     ) {
         LogModuleRegistry.registerModule(module)
         LogModuleRegistry.registerModuleLogCategories(module.name, *logCategories)
+
+        // 注册后自动启用该模块的所有日志分类
+        enableModuleLogCategories(module.name)
+
     }
 
-    /**
-     * 为已注册的日志模块添加日志分类
-     */
-    internal fun addModuleLogCategories(moduleName: String, vararg logCategories: String) {
-        LogModuleRegistry.registerModuleLogCategories(moduleName, *logCategories)
-    }
 
     /**
      * 启用日志模块的所有日志分类
      */
-    internal  fun enableModuleLogCategories(moduleName: String) {
+    internal fun enableModuleLogCategories(moduleName: String) {
         val categories = LogModuleRegistry.getModuleLogCategories(moduleName)
         Logger.enableModules(*categories.toTypedArray())
         AndroidLogUtil.i("Enabled log categories for $moduleName: ${categories.joinToString(", ")}")
@@ -447,7 +445,7 @@ internal object MultiModuleLogger {
     /**
      * 异常输出
      */
-    internal  fun log(
+    internal fun log(
         moduleName: String,
         logCategory: String,
         throwable: Throwable,

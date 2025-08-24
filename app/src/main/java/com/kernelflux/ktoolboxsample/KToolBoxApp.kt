@@ -2,6 +2,7 @@ package com.kernelflux.ktoolboxsample
 
 import android.app.Application
 import com.kernelflux.ktoolbox.logger.SDKLogger
+import com.kernelflux.ktoolbox.thread.SDKThreadManager
 
 class KToolBoxApp : Application() {
 
@@ -9,6 +10,7 @@ class KToolBoxApp : Application() {
         super.onCreate()
 
         initLoggerSDK()
+        initThreadSDK()
     }
 
 
@@ -17,9 +19,19 @@ class KToolBoxApp : Application() {
             this,
             enableLogcat = true
         )
-        SDKLogger.registerModules("user")
-        SDKLogger.enableModules("user")
+        SDKLogger.registerLogModule(
+            SDKLogger.LogModule(
+                "KToolBox",
+                "com.kernelflux.ktoolbox"
+            ),
+            "user",
+            "main_page"
+        )
     }
 
+
+    private fun initThreadSDK() {
+        SDKThreadManager.initialize()
+    }
 
 }

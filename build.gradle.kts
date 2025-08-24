@@ -21,6 +21,7 @@ tasks.register("publishAllModules") {
         ":ktoolbox-storage:publish",
         ":ktoolbox-string:publish",
         ":ktoolbox-system:publish",
-        ":ktoolbox-thread:publish"
+        ":ktoolbox-thread:publish",
+        ":ktoolbox-logger:publish"
     )
 }

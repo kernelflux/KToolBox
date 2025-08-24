@@ -12,12 +12,6 @@ internal object Logger {
     private val enabledModules = AtomicInteger(0)
     private val isInitialized = AtomicBoolean(false)
 
-    /**
-     * 设置ApplicationContext（必须在初始化前调用）
-     */
-    internal fun setApplicationContext(context: android.content.Context) {
-        ApplicationContextProvider.setContext(context.applicationContext)
-    }
 
     /**
      * 初始化核心日志系统
