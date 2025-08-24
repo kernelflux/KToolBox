@@ -8,9 +8,10 @@ import java.util.concurrent.atomic.AtomicInteger
  * Android Logcat输出
  */
 class LogcatOutput(
-    private val enableStackTrace: Boolean = true,
+    private val enableStackTrace: Boolean = false,  // 默认不输出堆栈
     private val enableThreadInfo: Boolean = false,
-    private val maxTagLength: Int = 23
+    private val maxTagLength: Int = 23,
+    private val tagPrefix: String = "KToolBoxSDK"  // 添加tag前缀
 ) : LogOutput {
 
     private val tagCache = ConcurrentHashMap<String, String>()
@@ -36,10 +37,18 @@ class LogcatOutput(
         synchronized(tagCache) {
             tagCache[moduleName]?.let { return it }
 
-            val tag = if (moduleName.length > maxTagLength) {
+            // 构建更精准的tag
+            val baseTag = if (moduleName.length > maxTagLength) {
                 moduleName.substring(0, maxTagLength)
             } else {
                 moduleName
+            }
+
+            // 添加前缀，便于筛选
+            val tag = if (tagPrefix.isNotEmpty()) {
+                "${tagPrefix}_$baseTag"
+            } else {
+                baseTag
             }
 
             tagCache[moduleName] = tag
@@ -57,9 +66,132 @@ class LogcatOutput(
 
         builder.append(message)
 
+        // 只在明确启用时才输出堆栈信息
         if (enableStackTrace) {
             val stackTrace = LoggerUtils.getRelevantStackTrace(
-                excludeClasses = listOf("LogcatOutput", "LoggerCore", "AndroidLogUtil")
+                excludeClasses = listOf("LogcatOutput", "LoggerCore", "AndroidLogUtil", "SDKLogger")
+            )
+            if (stackTrace.isNotEmpty()) {
+                builder.append("\n").append(stackTrace)
+            }
+        }
+
+        return builder.toString()
+    }
+
+    override fun cleanup() {
+        tagCache.clear()
+    }
+}
+
+/**
+ * 智能Android Logcat输出
+ *
+ * 支持更精准的tag控制和日志级别选择
+ */
+class SmartLogcatOutput(
+    private val enableStackTrace: Boolean = false,
+    private val enableThreadInfo: Boolean = false,
+    private val maxTagLength: Int = 23,
+    private val tagPrefix: String = "SDK",
+    private val tagMapping: Map<String, String> = emptyMap(),  // 自定义tag映射
+    private val levelMapping: Map<String, Int> = emptyMap()    // 自定义日志级别映射
+) : LogOutput {
+
+    private val tagCache = ConcurrentHashMap<String, String>()
+
+    companion object {
+        const val LEVEL_VERBOSE = 0
+        const val LEVEL_DEBUG = 1
+        const val LEVEL_INFO = 2
+        const val LEVEL_WARN = 3
+        const val LEVEL_ERROR = 4
+    }
+
+    override fun output(moduleName: String, message: String) {
+        try {
+            val tag = getOrCreateTag(moduleName)
+            val fullMessage = buildFullMessage(message)
+            val level = getLogLevel(moduleName)
+
+            // 根据级别输出日志
+            when (level) {
+                LEVEL_VERBOSE -> Log.v(tag, fullMessage)
+                LEVEL_DEBUG -> Log.d(tag, fullMessage)
+                LEVEL_INFO -> Log.i(tag, fullMessage)
+                LEVEL_WARN -> Log.w(tag, fullMessage)
+                LEVEL_ERROR -> Log.e(tag, fullMessage)
+                else -> Log.i(tag, fullMessage)
+            }
+        } catch (e: Exception) {
+            AndroidLogUtil.e("SmartLogcatOutput error: ${e.message}", e)
+        }
+    }
+
+    private fun getOrCreateTag(moduleName: String): String {
+        synchronized(tagCache) {
+            tagCache[moduleName]?.let { return it }
+
+            // 优先使用自定义映射
+            val mappedTag = tagMapping[moduleName]
+            if (mappedTag != null) {
+                tagCache[moduleName] = mappedTag
+                return mappedTag
+            }
+
+            // 构建默认tag
+            val baseTag = if (moduleName.length > maxTagLength) {
+                moduleName.substring(0, maxTagLength)
+            } else {
+                moduleName
+            }
+
+            // 添加前缀
+            val tag = if (tagPrefix.isNotEmpty()) {
+                "${tagPrefix}_$baseTag"
+            } else {
+                baseTag
+            }
+
+            tagCache[moduleName] = tag
+            return tag
+        }
+    }
+
+    private fun getLogLevel(moduleName: String): Int {
+        // 优先使用自定义级别映射
+        levelMapping[moduleName]?.let { return it }
+
+        // 根据模块名称智能判断级别
+        return when {
+            moduleName.contains("ERROR", ignoreCase = true) -> LEVEL_ERROR
+            moduleName.contains("WARN", ignoreCase = true) -> LEVEL_WARN
+            moduleName.contains("DEBUG", ignoreCase = true) -> LEVEL_DEBUG
+            moduleName.contains("VERBOSE", ignoreCase = true) -> LEVEL_VERBOSE
+            else -> LEVEL_INFO
+        }
+    }
+
+    private fun buildFullMessage(message: String): String {
+        val builder = StringBuilder()
+
+        if (enableThreadInfo) {
+            val thread = Thread.currentThread()
+            builder.append("[${thread.name}] ")
+        }
+
+        builder.append(message)
+
+        // 只在明确启用时才输出堆栈信息
+        if (enableStackTrace) {
+            val stackTrace = LoggerUtils.getRelevantStackTrace(
+                excludeClasses = listOf(
+                    "LogcatOutput",
+                    "SmartLogcatOutput",
+                    "LoggerCore",
+                    "AndroidLogUtil",
+                    "SDKLogger"
+                )
             )
             if (stackTrace.isNotEmpty()) {
                 builder.append("\n").append(stackTrace)
@@ -98,7 +230,8 @@ class AndroidFileOutput(
 
     private var currentFile: java.io.File? = null
     private var currentFileWriter: java.io.FileWriter? = null
-    private val dateFormat = java.text.SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSS", java.util.Locale.getDefault())
+    private val dateFormat =
+        java.text.SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSS", java.util.Locale.getDefault())
 
     init {
         createLogDirectory()
@@ -195,7 +328,8 @@ class OptimizedMemoryOutput(
     private val flushInterval: Long = 5000 // 5秒
 ) : LogOutput {
 
-    private val logBuffer = java.util.Collections.newSetFromMap(java.util.concurrent.ConcurrentHashMap<String, Boolean>())
+    private val logBuffer =
+        java.util.Collections.newSetFromMap(java.util.concurrent.ConcurrentHashMap<String, Boolean>())
     private val lastFlushTime = AtomicInteger(0)
 
     override fun output(moduleName: String, message: String) {

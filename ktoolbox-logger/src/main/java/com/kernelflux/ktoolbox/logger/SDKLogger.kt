@@ -1,5 +1,7 @@
 package com.kernelflux.ktoolbox.logger
 
+import android.content.Context
+
 
 /**
  * SDK日志系统
@@ -7,18 +9,16 @@ package com.kernelflux.ktoolbox.logger
 object SDKLogger {
 
     // ==================== 初始化 ====================
-
-    /**
-     * 设置ApplicationContext（必须在初始化前调用）
-     */
-    fun setApplicationContext(context: android.content.Context) {
-        ApplicationContextProvider.setContext(context.applicationContext)
-    }
-
     /**
      * 初始化日志系统
      */
-    fun initialize(enableLogcat: Boolean = true, enableFileOutput: Boolean = false, logDir: String? = null) {
+    fun initialize(
+        context: Context,
+        enableLogcat: Boolean = true,
+        enableFileOutput: Boolean = false,
+        logDir: String? = null
+    ) {
+        ApplicationContextProvider.setContext(context.applicationContext)
         Logger.initialize(enableLogcat, enableFileOutput, logDir)
         AndroidLogUtil.i("SDKLogger initialized")
     }
@@ -144,7 +144,12 @@ object SDKLogger {
     /**
      * 异常输出多模块日志
      */
-    fun log(moduleName: String, logCategory: String, throwable: Throwable, message: String? = null) {
+    fun log(
+        moduleName: String,
+        logCategory: String,
+        throwable: Throwable,
+        message: String? = null
+    ) {
         MultiModuleLogger.log(moduleName, logCategory, throwable, message)
     }
 
