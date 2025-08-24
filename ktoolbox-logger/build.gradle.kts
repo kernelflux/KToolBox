@@ -4,12 +4,11 @@ plugins {
 }
 
 android {
-    namespace = "com.kernelflux.ktoolbox.display"
+    namespace = "com.kernelflux.ktoolbox.logger"
 }
 
 dependencies {
 }
 
 
-
-extra["ktoolbox.version"] = "0.0.5"
+extra["ktoolbox.version"] = "0.0.1"

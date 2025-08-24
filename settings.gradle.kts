@@ -36,4 +36,4 @@ include(":ktoolbox-storage")
 include(":ktoolbox-string")
 include(":ktoolbox-system")
 include(":ktoolbox-thread")
-
+include(":ktoolbox-logger")
